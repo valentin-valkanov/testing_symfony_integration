@@ -4,12 +4,18 @@ namespace App\Tests\Integration\Repository;
 
 use App\Repository\LockDownRepository;
 use Monolog\Test\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class LockDownRepositoryTest extends TestCase
+class LockDownRepositoryTest extends KernelTestCase
 {
     public function testIsInLockDownWithNoLockDownRows()
     {
-        $repository = new LockDownRepository();
+        $this->bootKernel();
+
+        $lockDownRepository = $this->getContainer()->get(LockDownRepository::class);
+        assert($lockDownRepository instanceof LockDownRepository);
+        $this->assertFalse($lockDownRepository->isInLockDown());
+
     }
 
 }
