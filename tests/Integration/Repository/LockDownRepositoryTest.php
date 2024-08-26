@@ -3,6 +3,8 @@
 namespace App\Tests\Integration\Repository;
 
 use App\Entity\LockDown;
+use App\Enum\LockDownStatus;
+use App\Factory\LockDownFactory;
 use App\Repository\LockDownRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,16 +27,34 @@ class LockDownRepositoryTest extends KernelTestCase
     {
         $this->bootKernel();
 
-        $lockDown = new LockDown();
-        $lockDown->setReason('Dinos have organized their own lunch break');
-        $lockDown->setCreatedAt(new \DateTimeImmutable('-1 day'));
+        LockDownFactory::createOne([
+            'createdAt' => new \DateTimeImmutable('-1 day'),
+            'status' => LockDownStatus::ACTIVE
+        ]);
 
-        $entityManager = $this->getContainer()->get(EntityManagerInterface::class);
-        assert($entityManager instanceof EntityManagerInterface);
-        $entityManager->persist($lockDown);
-        $entityManager->flush();
+        LockDownFactory::createMany(5, [
+            'createdAt' => new \DateTimeImmutable('-2 day'),
+            'status' => LockDownStatus::ENDED]
+        );
 
         $this->assertTrue($this->getLockDownRepository()->isInLockDown());
+    }
+
+    public function testIsInLockDownReturnsFalseIfMostRecentIsNotActive()
+    {
+        $this->bootKernel();
+
+        LockDownFactory::createOne([
+            'createdAt' => new \DateTimeImmutable('-1 day'),
+            'status' => LockDownStatus::ENDED
+        ]);
+
+        LockDownFactory::createMany(5, [
+                'createdAt' => new \DateTimeImmutable('-2 day'),
+                'status' => LockDownStatus::ACTIVE]
+        );
+
+        $this->assertFalse($this->getLockDownRepository()->isInLockDown());
     }
 
     private function getLockDownRepository(): LockDownRepository

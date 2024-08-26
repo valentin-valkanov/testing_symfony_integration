@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Dinosaur;
 use App\Repository\DinosaurRepository;
+use App\Repository\LockDownRepository;
 use App\Service\GithubService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class MainController extends AbstractController
 {
     #[Route(path: '/', name: 'app_homepage', methods: ['GET'])]
-    public function index(GithubService $github, DinosaurRepository $repository): Response
+    public function index(GithubService $github, DinosaurRepository $repository, LockDownRepository $lockDownRepository): Response
     {
         $dinos = $repository->findAll();
 
@@ -23,6 +24,7 @@ class MainController extends AbstractController
 
         return $this->render('main/index.html.twig', [
             'dinos' => $dinos,
+            'isLockedDown' => $lockDownRepository->isInLockDown()
         ]);
     }
 
