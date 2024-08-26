@@ -8,9 +8,12 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Test\TestCase;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Zenstruck\Foundry\Test\Factories;
+use Zenstruck\Foundry\Test\ResetDatabase;
 
 class LockDownRepositoryTest extends KernelTestCase
 {
+    use ResetDatabase, Factories;
     public function testIsInLockDownWithNoLockDownRows()
     {
         $this->bootKernel();
