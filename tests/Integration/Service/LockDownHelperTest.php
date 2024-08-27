@@ -10,11 +10,13 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 use Zenstruck\Mailer\Test\InteractsWithMailer;
+use Zenstruck\Messenger\Test\InteractsWithMessenger;
 
 class LockDownHelperTest extends KernelTestCase
 {
     use ResetDatabase, Factories;
     use InteractsWithMailer;
+    use InteractsWithMessenger;
 
     public function testEndCurrentLockdown()
     {
@@ -37,8 +39,12 @@ class LockDownHelperTest extends KernelTestCase
     {
         self::bootKernel();
 
+        $this->transport()->queue()->assertEmpty();
+
         $this->getLockDownHelper()->dinoEscaped();
         LockDownFactory::repository()->assert()->count(1);
+
+        $this->transport()->processOrFail();
 
         $this->mailer()->assertSentEmailCount(1);
         $this->mailer()->assertEmailSentTo('staff@dinotopia.com', 'PARK LOCKDOWN');

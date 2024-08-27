@@ -5,10 +5,10 @@ namespace App\Service;
 
 use App\Entity\LockDown;
 use App\Enum\LockDownStatus;
+use App\Message\LockDownStartedNotification;
 use App\Repository\LockDownRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class LockDownHelper
 {
@@ -16,7 +16,7 @@ class LockDownHelper
         private LockDownRepository $lockDownRepository,
         private EntityManagerInterface $entityManager,
         private GithubService $githubService,
-        private MailerInterface $mailer,
+        private MessageBusInterface $messageBus,
     )
     {
     }
@@ -30,6 +30,7 @@ class LockDownHelper
         $this->entityManager->flush();
 
         $this->githubService->clearLockDownAlerts();
+
     }
 
     public function dinoEscaped(): void
@@ -40,18 +41,7 @@ class LockDownHelper
         $this->entityManager->persist($lockDown);
         $this->entityManager->flush();
 
-        $this->sendEmailAlert();
+        $this->messageBus->dispatch(new LockDownStartedNotification());
 
-    }
-
-    private function sendEmailAlert(): void
-    {
-        $email = (new Email())
-            ->from('bob@dinotopia.com')
-            ->to('staff@dinotopia.com')
-            ->subject('PARK LOCKDOWN')
-            ->text('RUUUUUUNNNNNN!!!!')
-        ;
-        $this->mailer->send($email);
     }
 }
