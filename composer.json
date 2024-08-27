@@ -16,6 +16,7 @@
         "symfony/flex": "^2",
         "symfony/framework-bundle": "6.3.*",
         "symfony/http-client": "6.3.*",
+        "symfony/mailer": "6.3.*",
         "symfony/monolog-bundle": "^3.0",
         "symfony/runtime": "6.3.*",
         "symfony/security-csrf": "6.3.*",
@@ -32,7 +33,8 @@
         "symfony/phpunit-bridge": "^6.2",
         "symfony/stopwatch": "6.3.*",
         "symfony/web-profiler-bundle": "6.3.*",
-        "zenstruck/foundry": "^1.38"
+        "zenstruck/foundry": "^1.38",
+        "zenstruck/mailer-test": "^1.4"
     },
     "config": {
         "allow-plugins": {
@@ -83,7 +85,8 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "6.3.*"
+            "require": "6.3.*",
+            "docker": true
         }
     }
 }

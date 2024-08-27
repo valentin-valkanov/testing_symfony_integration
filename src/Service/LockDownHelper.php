@@ -7,13 +7,16 @@ use App\Entity\LockDown;
 use App\Enum\LockDownStatus;
 use App\Repository\LockDownRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 
 class LockDownHelper
 {
     public function __construct(
         private LockDownRepository $lockDownRepository,
         private EntityManagerInterface $entityManager,
-        private GithubService $githubService
+        private GithubService $githubService,
+        private MailerInterface $mailer,
     )
     {
     }
@@ -36,6 +39,19 @@ class LockDownHelper
         $lockDown->setReason('Dino escaped... NOT good...');
         $this->entityManager->persist($lockDown);
         $this->entityManager->flush();
-        // send an email with subject like "RUUUUUUNNNNNN!!!!"
+
+        $this->sendEmailAlert();
+
+    }
+
+    private function sendEmailAlert(): void
+    {
+        $email = (new Email())
+            ->from('bob@dinotopia.com')
+            ->to('staff@dinotopia.com')
+            ->subject('PARK LOCKDOWN')
+            ->text('RUUUUUUNNNNNN!!!!')
+        ;
+        $this->mailer->send($email);
     }
 }
