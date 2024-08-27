@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace App\Service;
 
@@ -11,6 +12,7 @@ class LockDownHelper
     public function __construct(
         private LockDownRepository $lockDownRepository,
         private EntityManagerInterface $entityManager,
+        private GithubService $githubService
     )
     {
     }
@@ -22,5 +24,7 @@ class LockDownHelper
         }
         $lockDown->setStatus(LockDownStatus::ENDED);
         $this->entityManager->flush();
+
+        $this->githubService->clearLockDownAlerts();
     }
 }

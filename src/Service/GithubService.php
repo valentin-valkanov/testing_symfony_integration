@@ -44,6 +44,12 @@ class GithubService
         return $health;
     }
 
+    public  function clearLockDownAlerts(): void
+    {
+        $this->logger->info('Cleaning lock down alerts on GitHib...');
+        //pretends like this make an API call to GitHub
+    }
+
     private function getDinoStatusFromLabels(array $labels): HealthStatus
     {
         $health = null;
