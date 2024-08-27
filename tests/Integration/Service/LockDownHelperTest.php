@@ -27,12 +27,21 @@ class LockDownHelperTest extends KernelTestCase
             ->method('clearLockDownAlerts');
         self::getContainer()->set(GithubService::class, $gitHubService);
 
-        $lockDownHelper = self::getContainer()->get(LockDownHelper::class);
-        assert($lockDownHelper instanceof LockDownHelper);
-
-
-        $lockDownHelper->endCurrentLockDown();
+        $this->getLockDownHelper()->endCurrentLockDown();
         $this->assertSame(LockDownStatus::ENDED, $lockDown->getStatus());
+    }
 
+    public function testDinoEscapedPersistsLockDown()
+    {
+        self::bootKernel();
+
+        $this->getLockDownHelper()->dinoEscaped();
+        LockDownFactory::repository()->assert()->count(1);
+
+    }
+
+    private function getLockDownHelper(): LockDownHelper
+    {
+        return self::getContainer()->get(LockDownHelper::class);
     }
 }
